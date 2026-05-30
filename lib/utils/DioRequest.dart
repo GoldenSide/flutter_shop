@@ -17,7 +17,6 @@ class DioRequest {
       },
     );
     _dio = Dio(options);
-
     _addInterceptors();
   }
   void _addInterceptors() {
@@ -29,7 +28,7 @@ class DioRequest {
       },
       onResponse: (response, handler) {
         // 在接收到响应之后可以进行一些处理，例如统一处理错误码、解析数据等
-        if (response.statusCode == '1') {
+        if (response.statusCode == 200) {
           // 成功响应
           return handler.next(response); // 继续处理响应
         } else {
@@ -49,31 +48,54 @@ class DioRequest {
     ));
   }
 
-  Future<Response> get(
+  Future<dynamic> get(
     String path, {
     Map<String, dynamic>? params,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    return await _dio.get(
+  }) {
+    return _handleResponse(_dio.get(
       path,
       queryParameters: params,
       options: options,
       cancelToken: cancelToken,
-    );
+    ));
   }
 
-  Future<Response> post(
+  Future<dynamic> post(
     String path, {
     Map<String, dynamic>? data,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    return await _dio.post(
+  }) {
+    return _handleResponse(_dio.post(
       path,
       data: data,
       options: options,
       cancelToken: cancelToken,
-    );
+    ));
+  }
+
+  Future<dynamic> _handleResponse(Future<Response> task) async {
+    Response<dynamic> response = await task;
+    final data = response.data as Map<String, dynamic>;
+    print('yejinlong请求成功了$data');
+    try {
+      if (data['code'] != GlobalConstants.SUCCESS_CODE) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: '请求失败，错误码：${data['code']}，错误信息：${data['message']}',
+        );
+      } else {
+        return data['result'];
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }
+
+// 单列对象
+final dioRequest = DioRequest();

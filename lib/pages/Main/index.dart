@@ -55,16 +55,21 @@ class _MainPageState extends State<MainPage> {
 
   // tabContent具体页面组件
   List<Widget> _buildTabContent() {
-    return [HomeView(), CategoryView(), CartView(), MineView()];
+    return [
+      const HomeView(),
+      const CategoryView(),
+      const CartView(),
+      const MineView()
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Main Page'),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Main Page'),
+      //   centerTitle: true,
+      // ),
       body: SafeArea(
         child: IndexedStack(
           index: _currentIndex,
