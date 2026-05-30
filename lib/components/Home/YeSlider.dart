@@ -54,7 +54,22 @@ class _YeSliderState extends State<YeSlider> {
 
 //搜索组件
   Widget _getSearch() {
-    return Positioned(child: Container());
+    return Positioned(
+        top: 20,
+        left: 10,
+        right: 10,
+        child: Container(
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          height: 50,
+          decoration: BoxDecoration(
+              color: const Color.fromRGBO(0, 0, 0, 0.4),
+              borderRadius: BorderRadius.circular(25)),
+          child: const Text(
+            '搜索...',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ));
   }
 
 // 指示灯
@@ -109,24 +124,6 @@ class _YeSliderState extends State<YeSlider> {
         _getSlider(),
         _getSearch(),
         _getDots(),
-        // Positioned(
-        //   bottom: 8,
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: List.generate(widget.bannerList.length, (index) {
-        //       return AnimatedContainer(
-        //         duration: const Duration(milliseconds: 250),
-        //         margin: const EdgeInsets.symmetric(horizontal: 4),
-        //         width: _currentIndex == index ? 12 : 8,
-        //         height: 8,
-        //         decoration: BoxDecoration(
-        //           color: _currentIndex == index ? Colors.white : Colors.white,
-        //           borderRadius: BorderRadius.circular(4),
-        //         ),
-        //       );
-        //     }),
-        //   ),
-        // ),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter_dianshang/utils/DioRequest.dart';
 import 'package:flutter_dianshang/contants/index.dart';
 import 'package:flutter_dianshang/viewmodels/home.dart';
 
+// 轮播图数据接口
 Future<List<BannerItem>> fetchBannerItems() async {
   // final response = await dioRequest.get(HttpConstants.BANNER_LIST);
   // print('获取轮播图数据成功: $response');
@@ -15,6 +16,24 @@ Future<List<BannerItem>> fetchBannerItems() async {
         .toList();
   } catch (e) {
     print('获取轮播图数据失败: $e');
+    return [];
+  }
+}
+
+// 分类数据接口
+Future<List<Category>> fetchCategoryItems() async {
+  // final response = await dioRequest.get(HttpConstants.CATEGORY_LIST);
+  // print('获取分类数据成功: $response');
+  try {
+    final response = await dioRequest.get(HttpConstants.CATEGORY_LIST);
+    // 假设返回的数据结构是 { code: '1', result: [ { id: '...', name: '...', picture: '...', children: [], goods: [] }, ... ] }
+    final List<dynamic> data = response as List<dynamic>;
+    print('获取分类数据成功: $data');
+    return data
+        .map((item) => Category.fromJson(item as Map<String, dynamic>))
+        .toList();
+  } catch (e) {
+    print('获取分类数据失败: $e');
     return [];
   }
 }

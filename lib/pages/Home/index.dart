@@ -17,10 +17,11 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final _controller = ScrollController();
 
-  int _page = 1;
-  bool _isLoading = false;
-  bool _hasMore = true;
+  // int _page = 1;
+  // bool _isLoading = false;
+  // bool _hasMore = true;
   List<BannerItem> _bannerList = [];
+  List<Category> _categoryList = [];
 
   @override
   void initState() {
@@ -35,19 +36,19 @@ class _HomeViewState extends State<HomeView> {
     setState(() {});
   }
 
+// 分类
+  Future<void> _getCategoryList() async {
+    _categoryList = await fetchCategoryItems();
+    setState(() {});
+  }
+
   void _getSyncData() {
     _getBannerList();
+    _getCategoryList();
   }
 
   List<Widget> _getScrollChildren() {
     return [
-      // SliverToBoxAdapter(
-      //   // padding: const EdgeInsets.all(16),
-      //   child: demo(
-      //     bannerList: _bannerList,
-      //   ),
-      // ),
-      // 其他内容可以继续添加Sliver组件
       SliverToBoxAdapter(
         // padding: const EdgeInsets.all(16),
         child: YeSlider(
@@ -57,13 +58,13 @@ class _HomeViewState extends State<HomeView> {
       const SliverToBoxAdapter(
         child: SizedBox(height: 10),
       ),
-      const SliverToBoxAdapter(
-        child: YeCategory(),
+      SliverToBoxAdapter(
+        child: YeCategory(categoryList: _categoryList),
       ),
       const SliverToBoxAdapter(
         child: SizedBox(height: 10),
       ),
-      const SliverToBoxAdapter(
+      SliverToBoxAdapter(
         child: YeSuggestion(
           suggestions: [
             '推荐商品1',
