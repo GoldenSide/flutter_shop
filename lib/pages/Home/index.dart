@@ -23,6 +23,11 @@ class _HomeViewState extends State<HomeView> {
   List<BannerItem> _bannerList = [];
   List<Category> _categoryList = [];
 
+  SpecialRecommend _recommendList = SpecialRecommend(
+    id: '',
+    title: '',
+    subTypes: [],
+  );
   @override
   void initState() {
     super.initState();
@@ -42,9 +47,17 @@ class _HomeViewState extends State<HomeView> {
     setState(() {});
   }
 
+  // 特惠推荐
+  Future<void> _getRecommendList() async {
+    _recommendList = await fetchRecommendItems();
+    print('yejinllong==特惠推荐: $_recommendList');
+    setState(() {});
+  }
+
   void _getSyncData() {
     _getBannerList();
     _getCategoryList();
+    _getRecommendList();
   }
 
   List<Widget> _getScrollChildren() {
@@ -66,11 +79,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       SliverToBoxAdapter(
         child: YeSuggestion(
-          suggestions: [
-            '推荐商品1',
-            '推荐商品2',
-            '推荐商品3',
-          ],
+          recommendList: _recommendList,
         ),
       ),
       const SliverToBoxAdapter(

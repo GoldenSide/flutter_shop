@@ -79,7 +79,6 @@ class DioRequest {
   Future<dynamic> _handleResponse(Future<Response> task) async {
     Response<dynamic> response = await task;
     final data = response.data as Map<String, dynamic>;
-    print('yejinlong请求成功了$data');
     try {
       if (data['code'] != GlobalConstants.SUCCESS_CODE) {
         throw DioException(

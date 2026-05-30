@@ -37,3 +37,20 @@ Future<List<Category>> fetchCategoryItems() async {
     return [];
   }
 }
+
+// 特惠推荐数据接口
+Future<SpecialRecommend> fetchRecommendItems() async {
+  // final response = await dioRequest.get(HttpConstants.PRODUCT_LIST);
+  // print('获取特惠推荐数据成功: $response');
+  try {
+    final response = await dioRequest.get(HttpConstants.PRODUCT_LIST);
+    // 假设返回的数据结构是 { code: '1', result: [ { id: '...', name: '...', picture: '...', price: '...', stock: '...', sale: '...', comment: '...', goods: [] }, ... ] }
+    // final List<dynamic> data = response as List<dynamic>;
+    print('获取特惠推荐数据成功: $response');
+    return SpecialRecommend.fromJson(response);
+  } catch (e) {
+    print('获取特惠推荐数据失败: $e');
+    // return SpecialRecommend();
+    throw e;
+  }
+}
