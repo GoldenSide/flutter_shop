@@ -22,18 +22,18 @@ class YeSlider extends StatefulWidget {
 }
 
 class _YeSliderState extends State<YeSlider> {
-  final PageController _pageController = PageController();
   int _currentIndex = 0;
+  final CarouselSliderController _sliderController = CarouselSliderController();
 
   @override
   void dispose() {
-    _pageController.dispose();
     super.dispose();
   }
 
   Widget _getSlider() {
     final double screenWidth = MediaQuery.of(context).size.width;
     return CarouselSlider(
+        carouselController: _sliderController,
         items: List.generate(widget.bannerList.length, (int index) {
           return Image.network(
             widget.bannerList[index].imgUrl,
@@ -41,7 +41,52 @@ class _YeSliderState extends State<YeSlider> {
             width: screenWidth,
           );
         }),
-        options: CarouselOptions(viewportFraction: 1, autoPlay: true));
+        options: CarouselOptions(
+          viewportFraction: 1,
+          autoPlay: true,
+          height: widget.height,
+          autoPlayCurve: Easing.standard,
+          onPageChanged: (index, reason) => setState(() {
+            _currentIndex = index;
+          }),
+        ));
+  }
+
+//搜索组件
+  Widget _getSearch() {
+    return Positioned(child: Container());
+  }
+
+// 指示灯
+  Widget _getDots() {
+    return Positioned(
+        left: 0,
+        right: 0,
+        bottom: 8,
+        child: Container(
+          height: 40,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.bannerList.length, (int index) {
+              return GestureDetector(
+                onTap: () {
+                  _sliderController.jumpToPage(index);
+                },
+                child: AnimatedContainer(
+                  height: 6,
+                  width: _currentIndex == index ? 40 : 30,
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                      color: _currentIndex == index
+                          ? Colors.white
+                          : const Color.fromRGBO(0, 0, 0, 0.3),
+                      borderRadius: BorderRadius.circular(4)),
+                ),
+              );
+            }),
+          ),
+        ));
   }
 
   @override
@@ -62,65 +107,26 @@ class _YeSliderState extends State<YeSlider> {
       alignment: Alignment.bottomCenter,
       children: [
         _getSlider(),
-        // PageView.builder(
-        //   controller: _pageController,
-        //   itemCount: widget.bannerList.length,
-        //   onPageChanged: (index) {
-        //     setState(() {
-        //       _currentIndex = index;
-        //     });
-        //   },
-        //   itemBuilder: (context, index) {
-        //     return ClipRRect(
-        //       borderRadius: BorderRadius.circular(12),
-        //       child: Image.network(
-        //         widget.bannerList[index].imgUrl,
-        //         fit: BoxFit.cover,
-        //         width: double.infinity,
-        //         loadingBuilder: (context, child, loadingProgress) {
-        //           if (loadingProgress == null) return child;
-        //           return Center(
-        //             child: CircularProgressIndicator(
-        //               value: loadingProgress.expectedTotalBytes != null
-        //                   ? loadingProgress.cumulativeBytesLoaded /
-        //                       loadingProgress.expectedTotalBytes!
-        //                   : null,
-        //             ),
-        //           );
-        //         },
-        //         errorBuilder: (context, error, stackTrace) {
-        //           return Container(
-        //             color: Colors.grey[200],
-        //             alignment: Alignment.center,
-        //             child: const Icon(
-        //               Icons.broken_image,
-        //               color: Colors.grey,
-        //               size: 48,
-        //             ),
-        //           );
-        //         },
-        //       ),
-        //     );
-        //   },
+        _getSearch(),
+        _getDots(),
+        // Positioned(
+        //   bottom: 8,
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: List.generate(widget.bannerList.length, (index) {
+        //       return AnimatedContainer(
+        //         duration: const Duration(milliseconds: 250),
+        //         margin: const EdgeInsets.symmetric(horizontal: 4),
+        //         width: _currentIndex == index ? 12 : 8,
+        //         height: 8,
+        //         decoration: BoxDecoration(
+        //           color: _currentIndex == index ? Colors.white : Colors.white,
+        //           borderRadius: BorderRadius.circular(4),
+        //         ),
+        //       );
+        //     }),
+        //   ),
         // ),
-        Positioned(
-          bottom: 8,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(widget.bannerList.length, (index) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: _currentIndex == index ? 12 : 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: _currentIndex == index ? Colors.white : Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              );
-            }),
-          ),
-        ),
       ],
     );
   }
