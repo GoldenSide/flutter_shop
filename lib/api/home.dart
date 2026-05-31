@@ -35,11 +35,11 @@ Future<List<Category>> fetchCategoryItems() async {
 }
 
 // 特惠推荐数据接口
-Future<SpecialRecommend> fetchSpecialRecommendItems(
-    Map<String, dynamic> params) async {
+Future<SpecialRecommend> fetchSpecialRecommendItems() async {
   try {
-    final response =
-        await dioRequest.get(HttpConstants.PRODUCT_LIST, params: params);
+    final response = await dioRequest.get(
+      HttpConstants.PRODUCT_LIST,
+    );
 
     // 假设返回的数据结构是 { code: '1', result: [ { id: '...', name: '...', picture: '...', price: '...', stock: '...', sale: '...', comment: '...', goods: [] }, ... ] }
     // final List<dynamic> data = response as List<dynamic>;
@@ -87,11 +87,13 @@ Future<SpecialRecommend> fetchStepRecommendItems() async {
 }
 
 // 推荐列表数据接口
-Future<List<GoodsDetailItem>> fetchRecommendList() async {
+Future<List<GoodsDetailItem>> fetchRecommendList(
+    Map<String, dynamic> params) async {
   // final response = await dioRequest.get(HttpConstants.RECOMMEND_LIST);
   // print('获取推荐列表数据成功: $response');
   try {
-    final response = await dioRequest.get(HttpConstants.RECOMMEND_LIST);
+    final response =
+        await dioRequest.get(HttpConstants.RECOMMEND_LIST, params: params);
     // 假设返回的数据结构是 { code: '1', result: [ { id: '...', name: '...', picture: '...', price: '...', stock: '...', sale: '...', comment: '...', goods: [] }, ... ] }
     final List<dynamic> data = response as List<dynamic>;
     print('获取推荐列表数据成功: $data');

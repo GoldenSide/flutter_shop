@@ -27,13 +27,13 @@ class _YeMoreListState extends State<YeMoreList> {
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 200 &&
-        !_isLoading) {
-      // _loadMore();
-    }
-  }
+  // void _onScroll() {
+  //   if (_scrollController.position.pixels >=
+  //           _scrollController.position.maxScrollExtent - 200 &&
+  //       !_isLoading) {
+  //     // _loadMore();
+  //   }
+  // }
 
   // Future<void> _loadMore() async {
   //   setState(() {
@@ -134,32 +134,18 @@ class _YeMoreListState extends State<YeMoreList> {
   Widget build(BuildContext context) {
     return SliverPadding(
       padding: const EdgeInsets.all(10),
-      sliver: SliverGrid(
+      sliver: SliverGrid.builder(
+        itemCount: widget.recommendList.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
           childAspectRatio: 0.725,
         ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            return _buildItem(index);
-          },
-          childCount: widget.recommendList.length,
-        ),
+        itemBuilder: (context, index) {
+          return _buildItem(index);
+        },
       ),
     );
   }
 }
-
-
-//  SliverToBoxAdapter(
-//           child: Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 16),
-//             child: Center(
-//               child: _isLoading
-//                   ? const CircularProgressIndicator()
-//                   : const SizedBox.shrink(),
-//             ),
-//           ),
-//         ),

@@ -6,6 +6,7 @@ import 'package:flutter_dianshang/components/Home/YeHot.dart';
 import 'package:flutter_dianshang/components/Home/YeMoreList.dart';
 import 'package:flutter_dianshang/components/Home/YeSlider.dart';
 import 'package:flutter_dianshang/components/Home/YeSuggestion.dart';
+import 'package:flutter_dianshang/utils/ToastUtils.dart';
 import 'package:flutter_dianshang/viewmodels/home.dart';
 
 class HomeView extends StatefulWidget {
@@ -18,11 +19,12 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final _controller = ScrollController();
 
-  // int _page = 1;
-  // bool _isLoading = false;
-  // bool _hasMore = true;
+  int _page = 1;
+  bool _isLoading = false;
+  bool _hasMore = true;
   List<BannerItem> _bannerList = [];
   List<Category> _categoryList = [];
+  double paddingTop = 100;
 
   SpecialRecommend _specialRecommendList = SpecialRecommend(
     id: '',
@@ -44,57 +46,79 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+    // 先注册事件,再执行微任务加载数据
+    _registerEvent();
     // 加载所有异步请求数据
-    _getSyncData();
+    // initState->build->下拉刷新组件->才可以操作
+    Future.microtask(() => _globalKey.currentState?.show());
   }
 
   // 轮播图
   Future<void> _getBannerList() async {
     _bannerList = await fetchBannerItems();
-    setState(() {});
   }
 
 // 分类
   Future<void> _getCategoryList() async {
     _categoryList = await fetchCategoryItems();
-    setState(() {});
   }
 
   // 特惠推荐
   Future<void> _getSpecialRecommendList() async {
-    _specialRecommendList = await fetchSpecialRecommendItems({"limit": 10});
+    _specialRecommendList = await fetchSpecialRecommendItems();
     print('yejinllong==特惠推荐: $_specialRecommendList');
-    setState(() {});
   }
 
 // 爆款推荐
   Future<void> _getHotRecommendList() async {
     _hotRecommendList = await fetchHotRecommendItems();
     print('yejinllong==爆款推荐: $_hotRecommendList');
-    setState(() {});
   }
 
   // 一站买全
   Future<void> _getStepRecommendList() async {
     _stepRecommendList = await fetchStepRecommendItems();
     print('yejinllong==一站买全: $_stepRecommendList');
-    setState(() {});
+    ;
   }
 
 // 推荐列表
   Future<void> _getRecommendList() async {
-    _recommendList = await fetchRecommendList();
+    if (_isLoading || !_hasMore) {
+      return;
+    }
+    int limit = 8 * _page;
+    _isLoading = true;
+    _recommendList = await fetchRecommendList({"limit": limit});
+    _isLoading = false;
+    _hasMore = _recommendList.length >= limit;
+    if (_hasMore) {
+      _page++;
+    }
     print('yejinllong==推荐列表: $_recommendList');
-    setState(() {});
   }
 
-  void _getSyncData() {
-    _getBannerList();
-    _getCategoryList();
-    _getSpecialRecommendList();
-    _getHotRecommendList();
-    _getStepRecommendList();
-    _getRecommendList();
+  // 添加滚动事件
+  void _registerEvent() {
+    _controller.addListener(() {
+      if (_controller.position.pixels >=
+          _controller.position.maxScrollExtent - 60) {
+        // 到达底部
+        print('到达底部');
+        // 加载更多数据
+        _getRecommendList();
+        setState(() {});
+      }
+    });
+  }
+
+  Future<void> _getSyncData() async {
+    await _getBannerList();
+    await _getCategoryList();
+    await _getSpecialRecommendList();
+    await _getHotRecommendList();
+    await _getStepRecommendList();
+    await _getRecommendList();
   }
 
   List<Widget> _getScrollChildren() {
@@ -155,12 +179,34 @@ class _HomeViewState extends State<HomeView> {
     ];
   }
 
+// 下拉刷新
+  Future<void> _onRefresh() async {
+    _page = 1;
+    _isLoading = false;
+    _hasMore = true;
+    await _getSyncData();
+    ToastUtils.showToast(context, '刷新成功');
+    paddingTop = 0;
+    setState(() {});
+  }
+
+// GlobalKey 是一个方法可以创建一个key绑定到Widget 上 可以操作该Widget 的状态
+  final GlobalKey<RefreshIndicatorState> _globalKey =
+      GlobalKey<RefreshIndicatorState>();
+
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      controller: _controller,
-      slivers: _getScrollChildren(),
-    );
+    return RefreshIndicator(
+        key: _globalKey,
+        onRefresh: _onRefresh,
+        child: AnimatedContainer(
+          padding: EdgeInsets.only(top: paddingTop),
+          duration: const Duration(seconds: 1),
+          child: CustomScrollView(
+            controller: _controller,
+            slivers: _getScrollChildren(),
+          ),
+        ));
   }
 }
 
