@@ -209,22 +209,3 @@ class _HomeViewState extends State<HomeView> {
         ));
   }
 }
-
-class demo extends StatefulWidget {
-  final List<BannerItem> bannerList;
-  const demo({super.key, required this.bannerList});
-
-  @override
-  State<demo> createState() => _demoState();
-}
-
-class _demoState extends State<demo> {
-  @override
-  Widget build(BuildContext context) {
-    return Image.network(
-      widget.bannerList[0].imgUrl,
-      width: 300,
-      height: 300,
-    );
-  }
-}

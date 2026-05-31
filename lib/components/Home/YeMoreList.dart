@@ -17,35 +17,12 @@ class _YeMoreListState extends State<YeMoreList> {
   @override
   void initState() {
     super.initState();
-    // _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    // _scrollController.removeListener(_onScroll);
-    // _scrollController.dispose();
     super.dispose();
   }
-
-  // void _onScroll() {
-  //   if (_scrollController.position.pixels >=
-  //           _scrollController.position.maxScrollExtent - 200 &&
-  //       !_isLoading) {
-  //     // _loadMore();
-  //   }
-  // }
-
-  // Future<void> _loadMore() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   await Future.delayed(const Duration(milliseconds: 800));
-  //   final int currentLength = _items.length;
-  //   _items.addAll(List.generate(20, (index) => currentLength + index));
-  //   setState(() {
-  //     _isLoading = false;
-  //   });
-  // }
 
   Widget _buildItem(int index) {
     return Container(
