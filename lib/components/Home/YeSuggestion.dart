@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dianshang/viewmodels/home.dart';
 
 class YeSuggestion extends StatelessWidget {
-  final SpecialRecommend recommendList;
+  final SpecialRecommend specialRecommendList;
   final void Function(String)? onTap;
 
   const YeSuggestion({
     Key? key,
-    required this.recommendList,
+    required this.specialRecommendList,
     this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (recommendList.subTypes.isEmpty) {
+    if (specialRecommendList.subTypes.isEmpty) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(10),
@@ -60,11 +60,11 @@ class YeSuggestion extends StatelessWidget {
 
 // 底部右侧
     List<Widget> _buildBottomRight() {
-      if (recommendList.subTypes.isEmpty) {
+      if (specialRecommendList.subTypes.isEmpty) {
         return [];
       }
       List<GoodsItem> goodsItems =
-          recommendList.subTypes[0].goodsItems.items.take(3).toList();
+          specialRecommendList.subTypes[0].goodsItems.items.take(3).toList();
       return List.generate(goodsItems.length, (index) {
         return Column(children: [
           Image.network(
@@ -107,7 +107,6 @@ class YeSuggestion extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Colors.blue,
             borderRadius: BorderRadius.circular(8),
             image: const DecorationImage(
               image: AssetImage('lib/assets/home_cmd_sm.png'),

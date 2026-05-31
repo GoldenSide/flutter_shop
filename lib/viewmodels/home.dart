@@ -149,207 +149,35 @@ class GoodsItem {
 
   factory GoodsItem.fromJson(Map<String, dynamic> json) {
     return GoodsItem(
-      id: json["id"] ?? "",
+      id: json["id"].toString() ?? "",
       name: json["name"] ?? "",
       desc: json["desc"] ?? null,
-      price: json["price"] ?? "",
+      price: json["price"].toString() ?? "",
       picture: json["picture"] ?? "",
       orderNum: json["orderNum"] ?? 0,
     );
   }
 }
 
-// {
-//     "code": "1",
-//     "msg": "操作成功",
-//     "result": {
-//         "id": "897682543",
-//         "title": "特惠推荐",
-//         "subTypes": [
-//             {
-//                 "id": "912000341",
-//                 "title": "抢先尝鲜",
-//                 "goodsItems": {
-//                     "counts": 459,
-//                     "pageSize": 10,
-//                     "pages": 46,
-//                     "page": 1,
-//                     "items": [
-//                         {
-//                             "id": "1750713979950333956",
-//                             "name": "Balva 日本制高级时尚太阳镜 方框",
-//                             "desc": "抵挡99%紫外线太阳镜",
-//                             "price": "1213.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/235220/p5.png",
-//                             "orderNum": 17
-//                         },
-//                         {
-//                             "id": "1750713979895808015",
-//                             "name": "COGIT UV休闲百搭牛仔帽 深蓝色",
-//                             "desc": "不压发型 清凉舒适",
-//                             "price": "116.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/250541/p3.png",
-//                             "orderNum": 18
-//                         },
-//                         {
-//                             "id": "1750713979900002316",
-//                             "name": "CA4LA AKA SIX CHECK TRAPPER HAT ORANGE ONESIZE 货号:MOR00097",
-//                             "desc": "暖色格调飞行帽",
-//                             "price": "1809.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/254345/p1.png",
-//                             "orderNum": 10
-//                         },
-//                         {
-//                             "id": "1750713979652538372",
-//                             "name": "ROOTOTE DELI 个性时尚大容量手提包 黑色豹纹",
-//                             "desc": "大容量实用手提包",
-//                             "price": "298.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/250011/p5.png",
-//                             "orderNum": 13
-//                         },
-//                         {
-//                             "id": "1750713979929362433",
-//                             "name": "手袋动物园 防寒保暖可爱动物手套 咖色小熊",
-//                             "desc": "两用保暖动物小手套",
-//                             "price": "198.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/238258/p1.png",
-//                             "orderNum": 13
-//                         },
-//                         {
-//                             "id": "1750713979203747840",
-//                             "name": "CU2 舒适减负背包 紫色",
-//                             "desc": "舒适轻松实现大容量出行",
-//                             "price": "2419.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/255004/p1.png",
-//                             "orderNum": 25
-//                         },
-//                         {
-//                             "id": "1750713979900002312",
-//                             "name": "kaorinomori 毛边针织条带帽Bebe黑色 56cm～58cm(97)",
-//                             "desc": "秋冬必备萌系帽",
-//                             "price": "537.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/256104/p9.png",
-//                             "orderNum": 9
-//                         },
-//                         {
-//                             "id": "1750713979900002317",
-//                             "name": "CA4LA CHARI3 CHARCOAL GRAY ONESIZE 货号:TAM02605",
-//                             "desc": "温暖实用，型格百搭",
-//                             "price": "787.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/254354/p1.png",
-//                             "orderNum": 8
-//                         },
-//                         {
-//                             "id": "1750713979925168129",
-//                             "name": "KNITTING INN 羊毛毛毡格纹围巾 赤褐色",
-//                             "desc": "厚实柔软有弹性",
-//                             "price": "1019.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/42590/p1.png",
-//                             "orderNum": 15
-//                         },
-//                         {
-//                             "id": "1379052170040578049",
-//                             "name": "极光限定 珠光蓝珐琅锅",
-//                             "desc": null,
-//                             "price": "199.00",
-//                             "picture": "http://yjy-xiaotuxian-dev.oss-cn-beijing.aliyuncs.com/picture/2021-04-05/7f483771-6831-4a7a-abdb-2625acb755f3.png",
-//                             "orderNum": 929
-//                         }
-//                     ]
-//                 }
-//             },
-//             {
-//                 "id": "912000342",
-//                 "title": "新品预告",
-//                 "goodsItems": {
-//                     "counts": 459,
-//                     "pageSize": 10,
-//                     "pages": 46,
-//                     "page": 1,
-//                     "items": [
-//                         {
-//                             "id": "1750713979900002312",
-//                             "name": "kaorinomori 毛边针织条带帽Bebe黑色 56cm～58cm(97)",
-//                             "desc": "秋冬必备萌系帽",
-//                             "price": "537.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/256104/p9.png",
-//                             "orderNum": 9
-//                         },
-//                         {
-//                             "id": "1750713979929362433",
-//                             "name": "手袋动物园 防寒保暖可爱动物手套 咖色小熊",
-//                             "desc": "两用保暖动物小手套",
-//                             "price": "198.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/238258/p1.png",
-//                             "orderNum": 13
-//                         },
-//                         {
-//                             "id": "1750713979950333956",
-//                             "name": "Balva 日本制高级时尚太阳镜 方框",
-//                             "desc": "抵挡99%紫外线太阳镜",
-//                             "price": "1213.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/235220/p5.png",
-//                             "orderNum": 17
-//                         },
-//                         {
-//                             "id": "1750713979900002316",
-//                             "name": "CA4LA AKA SIX CHECK TRAPPER HAT ORANGE ONESIZE 货号:MOR00097",
-//                             "desc": "暖色格调飞行帽",
-//                             "price": "1809.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/254345/p1.png",
-//                             "orderNum": 10
-//                         },
-//                         {
-//                             "id": "1750713979925168129",
-//                             "name": "KNITTING INN 羊毛毛毡格纹围巾 赤褐色",
-//                             "desc": "厚实柔软有弹性",
-//                             "price": "1019.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/42590/p1.png",
-//                             "orderNum": 15
-//                         },
-//                         {
-//                             "id": "1379052170040578049",
-//                             "name": "极光限定 珠光蓝珐琅锅",
-//                             "desc": null,
-//                             "price": "199.00",
-//                             "picture": "http://yjy-xiaotuxian-dev.oss-cn-beijing.aliyuncs.com/picture/2021-04-05/7f483771-6831-4a7a-abdb-2625acb755f3.png",
-//                             "orderNum": 929
-//                         },
-//                         {
-//                             "id": "1750713979895808015",
-//                             "name": "COGIT UV休闲百搭牛仔帽 深蓝色",
-//                             "desc": "不压发型 清凉舒适",
-//                             "price": "116.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/250541/p3.png",
-//                             "orderNum": 18
-//                         },
-//                         {
-//                             "id": "1750713979652538372",
-//                             "name": "ROOTOTE DELI 个性时尚大容量手提包 黑色豹纹",
-//                             "desc": "大容量实用手提包",
-//                             "price": "298.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/250011/p5.png",
-//                             "orderNum": 13
-//                         },
-//                         {
-//                             "id": "1750713979900002317",
-//                             "name": "CA4LA CHARI3 CHARCOAL GRAY ONESIZE 货号:TAM02605",
-//                             "desc": "温暖实用，型格百搭",
-//                             "price": "787.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/254354/p1.png",
-//                             "orderNum": 8
-//                         },
-//                         {
-//                             "id": "1750713979203747840",
-//                             "name": "CU2 舒适减负背包 紫色",
-//                             "desc": "舒适轻松实现大容量出行",
-//                             "price": "2419.00",
-//                             "picture": "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/255004/p1.png",
-//                             "orderNum": 25
-//                         }
-//                     ]
-//                 }
-//             }
-//         ]
-//     }
-// }
+class GoodsDetailItem extends GoodsItem {
+  int payCount = 0;
+
+  GoodsDetailItem({
+    required super.id,
+    required super.name,
+    required super.price,
+    required super.picture,
+    required super.orderNum,
+    required this.payCount,
+  }) : super(desc: '');
+  factory GoodsDetailItem.fromJson(Map<String, dynamic> json) {
+    return GoodsDetailItem(
+      id: json["id"].toString() ?? "",
+      name: json["name"] ?? "",
+      price: json["price"].toString() ?? "",
+      picture: json["picture"] ?? "",
+      orderNum: json["orderNum"] ?? 0,
+      payCount: json["payCount"] ?? 0,
+    );
+  }
+}

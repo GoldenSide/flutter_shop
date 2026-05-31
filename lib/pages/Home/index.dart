@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dianshang/api/home.dart';
 import 'package:flutter_dianshang/components/Home/YeCategory.dart';
 import 'package:flutter_dianshang/components/Home/YeHot.dart';
@@ -23,11 +24,23 @@ class _HomeViewState extends State<HomeView> {
   List<BannerItem> _bannerList = [];
   List<Category> _categoryList = [];
 
-  SpecialRecommend _recommendList = SpecialRecommend(
+  SpecialRecommend _specialRecommendList = SpecialRecommend(
     id: '',
     title: '',
     subTypes: [],
   );
+  SpecialRecommend _hotRecommendList = SpecialRecommend(
+    id: '',
+    title: '',
+    subTypes: [],
+  );
+  SpecialRecommend _stepRecommendList = SpecialRecommend(
+    id: '',
+    title: '',
+    subTypes: [],
+  );
+  List<GoodsDetailItem> _recommendList = [];
+
   @override
   void initState() {
     super.initState();
@@ -48,15 +61,39 @@ class _HomeViewState extends State<HomeView> {
   }
 
   // 特惠推荐
+  Future<void> _getSpecialRecommendList() async {
+    _specialRecommendList = await fetchSpecialRecommendItems({"limit": 10});
+    print('yejinllong==特惠推荐: $_specialRecommendList');
+    setState(() {});
+  }
+
+// 爆款推荐
+  Future<void> _getHotRecommendList() async {
+    _hotRecommendList = await fetchHotRecommendItems();
+    print('yejinllong==爆款推荐: $_hotRecommendList');
+    setState(() {});
+  }
+
+  // 一站买全
+  Future<void> _getStepRecommendList() async {
+    _stepRecommendList = await fetchStepRecommendItems();
+    print('yejinllong==一站买全: $_stepRecommendList');
+    setState(() {});
+  }
+
+// 推荐列表
   Future<void> _getRecommendList() async {
-    _recommendList = await fetchRecommendItems();
-    print('yejinllong==特惠推荐: $_recommendList');
+    _recommendList = await fetchRecommendList();
+    print('yejinllong==推荐列表: $_recommendList');
     setState(() {});
   }
 
   void _getSyncData() {
     _getBannerList();
     _getCategoryList();
+    _getSpecialRecommendList();
+    _getHotRecommendList();
+    _getStepRecommendList();
     _getRecommendList();
   }
 
@@ -79,19 +116,42 @@ class _HomeViewState extends State<HomeView> {
       ),
       SliverToBoxAdapter(
         child: YeSuggestion(
-          recommendList: _recommendList,
+          specialRecommendList: _specialRecommendList,
         ),
       ),
       const SliverToBoxAdapter(
         child: SizedBox(height: 10),
       ),
-      const SliverToBoxAdapter(
-        child: YeHot(),
-      ),
+      SliverToBoxAdapter(
+          child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Flex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: YeHot(
+                results: _hotRecommendList,
+                type: 'hot',
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: YeHot(
+                results: _stepRecommendList,
+                type: 'step',
+              ),
+            ),
+          ],
+        ),
+      )),
       const SliverToBoxAdapter(
         child: SizedBox(height: 10),
       ),
-      YeMoreList(),
+      YeMoreList(
+        recommendList: _recommendList,
+      ),
     ];
   }
 
