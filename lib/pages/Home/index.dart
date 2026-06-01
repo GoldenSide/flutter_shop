@@ -95,6 +95,7 @@ class _HomeViewState extends State<HomeView> {
     if (_hasMore) {
       _page++;
     }
+    setState(() {});
     print('yejinllong==推荐列表: $_recommendList');
   }
 
@@ -102,12 +103,12 @@ class _HomeViewState extends State<HomeView> {
   void _registerEvent() {
     _controller.addListener(() {
       if (_controller.position.pixels >=
-          _controller.position.maxScrollExtent - 60) {
+          _controller.position.maxScrollExtent - 70) {
         // 到达底部
-        print('到达底部');
+        print(
+            '到达底部${_controller.position.pixels} ,${_controller.position.maxScrollExtent}');
         // 加载更多数据
         _getRecommendList();
-        setState(() {});
       }
     });
   }

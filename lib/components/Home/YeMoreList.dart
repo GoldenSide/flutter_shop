@@ -27,7 +27,6 @@ class _YeMoreListState extends State<YeMoreList> {
   Widget _buildItem(int index) {
     return Container(
       decoration: BoxDecoration(
-        // color: Colors.blue,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
