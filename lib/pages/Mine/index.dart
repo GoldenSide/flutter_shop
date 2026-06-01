@@ -109,10 +109,15 @@ class _MineViewState extends State<MineView> {
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                '立即登录',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+                child: const Text(
+                  '立即登录',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
