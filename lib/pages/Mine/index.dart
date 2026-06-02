@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dianshang/api/mine.dart';
 import 'package:flutter_dianshang/components/Home/YeMoreList.dart';
 import 'package:flutter_dianshang/components/Mine/YeGuess.dart';
+import 'package:flutter_dianshang/stores/userController.dart';
 import 'package:flutter_dianshang/viewmodels/home.dart';
 import 'package:flutter_dianshang/viewmodels/mine.dart';
+import 'package:get/get.dart';
 
 class MineView extends StatefulWidget {
   const MineView({Key? key}) : super(key: key);
@@ -22,6 +24,8 @@ class _MineViewState extends State<MineView> {
   };
   bool _isLoading = false;
   bool _hasMore = true;
+  final UserController _userController = Get.put(UserController());
+
   void _getGuessList() async {
     if (_isLoading || !_hasMore) return;
     _isLoading = true;
@@ -102,9 +106,13 @@ class _MineViewState extends State<MineView> {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 40,
-            child: Image.asset('lib/assets/goods_avatar.png'),
+          Obx(
+            () => CircleAvatar(
+              radius: 40,
+              child: _userController.userInfo.value.avatar.isNotEmpty
+                  ? Image.network(_userController.userInfo.value.avatar)
+                  : Image.asset('lib/assets/goods_avatar.png'),
+            ),
           ),
           const SizedBox(width: 16),
           Column(
@@ -112,11 +120,20 @@ class _MineViewState extends State<MineView> {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, '/login');
+                  if (_userController.userInfo.value.id.isNotEmpty) {
+                    Navigator.pushNamed(context, '/user');
+                  } else {
+                    Navigator.pushNamed(context, '/login');
+                  }
                 },
-                child: const Text(
-                  '立即登录',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                child: Obx(
+                  () => Text(
+                    _userController.userInfo.value.nickname.isNotEmpty
+                        ? _userController.userInfo.value.nickname
+                        : '点击登录/注册',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],

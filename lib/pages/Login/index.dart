@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dianshang/api/user.dart';
+import 'package:flutter_dianshang/stores/userController.dart';
 import 'package:flutter_dianshang/utils/ToastUtils.dart';
+import 'package:get/get.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,7 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscure = true;
   bool _loading = false;
-
+  final UserController _userController = Get.find();
   @override
   void dispose() {
     _usernameController.dispose();
@@ -56,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
         'password': _passwordController.text,
       });
       ToastUtils.showToast(context, '登录成功');
+      _userController.updateUserInfo(userInfo);
       print('登录成功: $userInfo');
     } catch (e) {
       ToastUtils.showToast(context, '登录失败: ${(e as DioException).message}');
