@@ -89,17 +89,17 @@ class _MineViewState extends State<MineView> {
         const SliverToBoxAdapter(
           child: SizedBox(height: 16),
         ),
-        // SliverToBoxAdapter(
-        //   child: _buildMenuItems(),
-        // ),
-        // const SliverToBoxAdapter(
-        //   child: SizedBox(height: 16),
-        // ),
         SliverToBoxAdapter(
           child: _buildVipContent(),
         ),
         SliverToBoxAdapter(
           child: _buildQuickAction(),
+        ),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 16),
+        ),
+        SliverToBoxAdapter(
+          child: _buildOrderListsAction(),
         ),
         const SliverToBoxAdapter(
           child: SizedBox(height: 16),
@@ -167,6 +167,7 @@ class _MineViewState extends State<MineView> {
     );
   }
 
+// 退出登录
   void _logOut() {
     showDialog(
         context: context,
@@ -285,6 +286,57 @@ class _MineViewState extends State<MineView> {
             _buildQuickActionItem('lib/assets/ic_user_collect.png', '我的收藏'),
             _buildQuickActionItem('lib/assets/ic_user_history.png', '我的足迹'),
             _buildQuickActionItem('lib/assets/ic_user_service.png', '我的客服'),
+          ],
+        ),
+      ),
+    );
+  }
+
+// 订单模块
+  Widget _buildOrderListsAction() {
+    Widget _buildActionItem(String path, String title) {
+      return Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              path,
+              width: 28,
+              height: 28,
+            ),
+            const SizedBox(height: 5),
+            Text(title, style: TextStyle(fontSize: 12))
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('我的订单',
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Flex(
+              direction: Axis.horizontal,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildActionItem('lib/assets/ic_user_order.png', '全部订单'),
+                _buildActionItem('lib/assets/ic_user_obligation.png', '待付款'),
+                _buildActionItem('lib/assets/ic_user_unshipped.png', '待发货'),
+                _buildActionItem('lib/assets/ic_user_unreceived.png', '待收货'),
+                _buildActionItem('lib/assets/ic_user_unevaluated.png', '待评价'),
+              ],
+            ),
           ],
         ),
       ),
