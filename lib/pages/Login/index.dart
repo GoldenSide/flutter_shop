@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dianshang/api/user.dart';
+import 'package:flutter_dianshang/utils/ToastUtils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -21,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _submit() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_isChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -36,12 +39,29 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     setState(() => _loading = true);
-    await Future.delayed(const Duration(seconds: 1)); // simulate auth
-    setState(() => _loading = false);
-    // In a real app, authenticate and navigate on success.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('登录成功（模拟）')),
-    );
+    try {
+      await _login();
+      setState(() => _loading = false);
+      Navigator.pop(context);
+    } catch (e) {
+      setState(() => _loading = false);
+      rethrow;
+    }
+  }
+
+  Future<void> _login() async {
+    try {
+      final userInfo = await loginApi({
+        'account': _usernameController.text,
+        'password': _passwordController.text,
+      });
+      ToastUtils.showToast(context, '登录成功');
+      print('登录成功: $userInfo');
+    } catch (e) {
+      ToastUtils.showToast(context, '登录失败: ${(e as DioException).message}');
+      print('登录失败: $e');
+      rethrow;
+    }
   }
 
   bool _isChecked = false;
@@ -118,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                         onChanged: (v) =>
                             setState(() => _isChecked = v ?? false)),
                     const Text.rich(TextSpan(
-                      text: '同意',
+                      text: '查看并同意',
                       style: TextStyle(fontSize: 12, color: Colors.black54),
                       children: [
                         TextSpan(

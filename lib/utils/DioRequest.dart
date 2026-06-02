@@ -33,17 +33,24 @@ class DioRequest {
           return handler.next(response); // 继续处理响应
         } else {
           // 错误响应
-          return handler.reject(DioError(
+          return handler.reject(DioException(
             requestOptions: response.requestOptions,
             response: response,
-            type: DioErrorType.badResponse,
-            error: '请求失败，状态码：${response.statusCode}',
+            type: DioExceptionType.badResponse,
+            message: '请求失败，状态码：${response.data['message']}',
           ));
         }
       },
       onError: (error, handler) {
         // 在请求发生错误时可以进行一些处理，例如统一处理网络错误、超时等
-        return handler.next(error); // 继续处理错误
+        // return handler.next(error); // 继续处理错误
+        return handler.reject(DioException(
+          requestOptions: error.requestOptions,
+          response: error.response,
+          type: DioExceptionType.badResponse,
+          message:
+              '请求失败，错误码：${error.response?.data['code']}，错误信息：${error.response?.data['message']}',
+        ));
       },
     ));
   }
@@ -85,7 +92,7 @@ class DioRequest {
           requestOptions: response.requestOptions,
           response: response,
           type: DioExceptionType.badResponse,
-          error: '请求失败，错误码：${data['code']}，错误信息：${data['message']}',
+          message: '请求失败，错误码：${data['code']}，错误信息：${data['message']}',
         );
       } else {
         return data['result'];
