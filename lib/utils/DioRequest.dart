@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import '../contants/index.dart';
+import 'package:flutter_dianshang/contants/TokenManager.dart';
+import 'package:flutter_dianshang/contants/index.dart';
 
 class DioRequest {
   static final DioRequest _instance = DioRequest._internal();
@@ -23,7 +24,7 @@ class DioRequest {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         // 在请求发送之前可以进行一些处理，例如添加公共参数、设置请求头等
-        // options.headers['Authorization'] = 'Bearer your_token';
+        options.headers['Authorization'] = 'Bearer ${tokenManager.getToken()}';
         return handler.next(options); // 继续发送请求
       },
       onResponse: (response, handler) {

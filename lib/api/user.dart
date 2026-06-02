@@ -12,3 +12,14 @@ Future<UserInfo> loginApi(Map<String, dynamic> data) async {
     throw e;
   }
 }
+
+Future<UserInfo> fetchUserInfo() async {
+  try {
+    final response = await dioRequest.get(HttpConstants.USER_PROFILE);
+    print('获取用户信息成功: $response');
+    return UserInfo.fromJSON(response);
+  } catch (e) {
+    print('获取用户信息失败: $e');
+    throw e;
+  }
+}

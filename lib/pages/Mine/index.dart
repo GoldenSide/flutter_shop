@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dianshang/api/mine.dart';
+import 'package:flutter_dianshang/api/user.dart';
 import 'package:flutter_dianshang/components/Home/YeMoreList.dart';
 import 'package:flutter_dianshang/components/Mine/YeGuess.dart';
+import 'package:flutter_dianshang/contants/TokenManager.dart';
 import 'package:flutter_dianshang/stores/userController.dart';
+import 'package:flutter_dianshang/utils/ToastUtils.dart';
 import 'package:flutter_dianshang/viewmodels/home.dart';
 import 'package:flutter_dianshang/viewmodels/mine.dart';
+import 'package:flutter_dianshang/viewmodels/user.dart';
 import 'package:get/get.dart';
 
 class MineView extends StatefulWidget {
@@ -40,10 +44,21 @@ class _MineViewState extends State<MineView> {
     setState(() {});
   }
 
+  // 获取用户信息
+  Future<void> _getUserInfo() async {
+    await tokenManager.init();
+    if (tokenManager.getToken().isNotEmpty) {
+      final userInfo = await fetchUserInfo();
+      _userController.updateUserInfo(userInfo);
+      print('用户信息: $userInfo');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     // 先注册事件,再执行微任务加载数据
+    _getUserInfo();
     _registerEvent();
     _getGuessList();
   }
@@ -115,32 +130,68 @@ class _MineViewState extends State<MineView> {
             ),
           ),
           const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  if (_userController.userInfo.value.id.isNotEmpty) {
-                    Navigator.pushNamed(context, '/user');
-                  } else {
-                    Navigator.pushNamed(context, '/login');
-                  }
-                },
-                child: Obx(
-                  () => Text(
-                    _userController.userInfo.value.nickname.isNotEmpty
-                        ? _userController.userInfo.value.nickname
-                        : '点击登录/注册',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+          Expanded(
+            flex: 1,
+            child: GestureDetector(
+              onTap: () {
+                if (_userController.userInfo.value.id.isNotEmpty) {
+                  Navigator.pushNamed(context, '/user');
+                } else {
+                  Navigator.pushNamed(context, '/login');
+                }
+              },
+              child: Obx(
+                () => Text(
+                  _userController.userInfo.value.nickname.isNotEmpty
+                      ? _userController.userInfo.value.nickname
+                      : '点击登录/注册',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
-            ],
+            ),
           ),
+          Obx(
+            () => GestureDetector(
+              onTap: () {
+                _logOut();
+              },
+              child: Text(
+                _userController.userInfo.value.id.isNotEmpty ? '退出' : '',
+                style: TextStyle(fontSize: 13, color: Colors.grey),
+              ),
+            ),
+          )
         ],
       ),
     );
+  }
+
+  void _logOut() {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text('提示'),
+              content: const Text('确定退出登录吗？'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    tokenManager.removeToken();
+                    _userController.updateUserInfo(UserInfo.fromJSON({}));
+                    Navigator.pop(context);
+                    ToastUtils.showToast(context, '退出登录成功');
+                    Navigator.pushNamed(context, '/login');
+                  },
+                  child: const Text('确定'),
+                ),
+              ],
+            ));
   }
 
 // 会员信息 收藏等

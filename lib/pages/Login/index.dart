@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dianshang/api/user.dart';
+import 'package:flutter_dianshang/contants/TokenManager.dart';
 import 'package:flutter_dianshang/stores/userController.dart';
+import 'package:flutter_dianshang/utils/LoadingDialog.dart';
 import 'package:flutter_dianshang/utils/ToastUtils.dart';
 import 'package:get/get.dart';
 
@@ -53,14 +55,18 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _login() async {
     try {
+      LoadingDialog.show(context, message: '登录中...');
       final userInfo = await loginApi({
         'account': _usernameController.text,
         'password': _passwordController.text,
       });
+      LoadingDialog.hide(context);
+      tokenManager.setToken(userInfo.token);
       ToastUtils.showToast(context, '登录成功');
       _userController.updateUserInfo(userInfo);
       print('登录成功: $userInfo');
     } catch (e) {
+      LoadingDialog.hide(context);
       ToastUtils.showToast(context, '登录失败: ${(e as DioException).message}');
       print('登录失败: $e');
       rethrow;
