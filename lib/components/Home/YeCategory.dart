@@ -12,46 +12,61 @@ class YeCategory extends StatefulWidget {
 class _YeCategoryState extends State<YeCategory> {
   @override
   Widget build(BuildContext context) {
+    if (widget.categoryList.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Container(
-      height: 90,
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: ListView.builder(
         itemCount: widget.categoryList.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           final item = widget.categoryList[index];
-          return Container(
-              height: 80,
-              alignment: Alignment.center,
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                // color: Theme.of(context).primaryColor.withOpacity(0.1),
-                color: Color.fromARGB(255, 231, 233, 234),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  // 可在此添加分类跳转逻辑
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 40,
-                      child: Image.network(
-                        item.picture,
-                        width: 28,
-                        height: 28,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      item.name,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ],
+          return GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('进入「${item.name}」'),
+                  duration: const Duration(seconds: 1),
                 ),
-              ));
+              );
+            },
+            child: Container(
+              width: 72,
+              margin: EdgeInsets.only(
+                left: index == 0 ? 12 : 8,
+                right: index == widget.categoryList.length - 1 ? 12 : 0,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF2F3F5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Image.network(
+                      item.picture,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.category, color: Colors.grey);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    item.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       ),
     );
