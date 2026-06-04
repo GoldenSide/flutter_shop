@@ -55,8 +55,8 @@ class YeHot extends StatelessWidget {
                 children: [
                   Image.network(
                     item.picture,
-                    width: 100,
-                    height: 100,
+                    width: 70,
+                    height: 70,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(Icons.error);

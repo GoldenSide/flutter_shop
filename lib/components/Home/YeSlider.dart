@@ -66,7 +66,7 @@ class _YeSliderState extends State<YeSlider> {
               color: const Color.fromRGBO(0, 0, 0, 0.4),
               borderRadius: BorderRadius.circular(25)),
           child: const Text(
-            '搜索...',
+            '搜索商品中...',
             style: TextStyle(color: Colors.white, fontSize: 18),
           ),
         ));

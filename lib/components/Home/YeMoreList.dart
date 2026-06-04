@@ -116,7 +116,7 @@ class _YeMoreListState extends State<YeMoreList> {
           crossAxisCount: 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          childAspectRatio: 0.725,
+          childAspectRatio: 0.675,
         ),
         itemBuilder: (context, index) {
           return _buildItem(index);

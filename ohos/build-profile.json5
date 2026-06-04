@@ -1,13 +1,27 @@
-
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_ohos_RaWpn_ccse1azuKJ6WP7-mlyCssP5xqI_y_QBQDV-uI=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001A4C88C057C402229D65D84FDA34174CDD4A7F5DF6914C4588AC4759E505B682278B7B93E5256E",
+          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_ohos_RaWpn_ccse1azuKJ6WP7-mlyCssP5xqI_y_QBQDV-uI=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_ohos_RaWpn_ccse1azuKJ6WP7-mlyCssP5xqI_y_QBQDV-uI=.p12",
+          "storePassword": "0000001A58F7E073DD5F3E446D3F0FF7A3CE402D1EAEA15458228EFF2509FABBEA3B75A4207B8CFFFDAF"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
         "signingConfig": "default",
         "compatibleSdkVersion": "5.1.0(18)",
         "runtimeOS": "HarmonyOS",
+        "targetSdkVersion": "5.1.1(19)"
       }
     ],
     "buildModeSet": [

@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dianshang/viewmodels/home.dart';
 
@@ -52,8 +50,8 @@ class YeSuggestion extends StatelessWidget {
     Widget _buildBottomLeft() {
       return Image.asset(
         'lib/assets/home_cmd_inner.png',
-        width: 100,
-        height: 140,
+        width: 60,
+        height: 100,
         fit: BoxFit.cover,
       );
     }
@@ -69,8 +67,8 @@ class YeSuggestion extends StatelessWidget {
         return Column(children: [
           Image.network(
             goodsItems[index].picture,
-            width: 100,
-            height: 160,
+            width: 60,
+            height: 100,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Image.asset('lib/assets/home_cmd_inner.png');
