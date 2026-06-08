@@ -2,10 +2,12 @@
 {
   "name": "entry",
   "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "Flutter 电商应用 - 入口模块",
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {},
+  "dependencies": {
+    "@ohos/flutter_ohos": "^5.1.0"
+  }
 }
 

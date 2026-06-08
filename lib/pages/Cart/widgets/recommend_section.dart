@@ -1,7 +1,7 @@
 /// 购物车 - 猜你喜欢 整体区域
 ///
-/// 包含：标题 + 两列商品卡片网格 + 底部状态（到底啦）
-/// 此组件不负责状态管理，所有数据通过 props 传入。
+/// 包含：标题 + 两列商品卡片网格 + 底部状态（到底啦）。
+/// 每个商品卡片（RecommendCard）内部维护自己的数量状态，本组件不负责。
 import 'package:flutter/material.dart';
 import '../recommend_mock.dart';
 import 'recommend_card.dart';
@@ -24,14 +24,16 @@ class RecommendSection extends StatelessWidget {
   final int maxCountPerItem;
   final bool showHeader;
 
-  /// 获取某件商品当前已添加的数量
+  /// 读取某个推荐商品当前的数量（build 时实时调用，返回最新值）。
   final int Function(RecommendItem item) getCount;
 
-  /// 点击 + 号时的回调：startPos 为 + 按钮中心点的屏幕坐标，可能为 null
+  /// 点击 + 号的回调，startPos 为按钮屏幕中心坐标（可能为 null）。
+  /// 调用时，卡片内部的 optimistic 已 +1。
   final void Function(RecommendItem item, Offset? startPos) onAddWithPos;
 
-  /// 点击 - 号时的回调（异步，可在内部弹对话框确认删除）
+  /// 点击 - 号的回调（异步，可在内部弹对话框确认删除）。
   final Future<void> Function(RecommendItem item) onMinus;
+
   final void Function(String msg) onShowToast;
 
   @override
@@ -44,8 +46,6 @@ class RecommendSection extends StatelessWidget {
       ));
     }
 
-    // 如果不渲染标题，childCount = 商品行数 + 底部 1 行
-    // 如果渲染标题，childCount = 标题 1 + 商品行数 + 底部 1
     final titleOffset = showHeader ? 1 : 0;
 
     return SliverList(
@@ -69,8 +69,8 @@ class RecommendSection extends StatelessWidget {
                 Expanded(
                   child: RecommendCard(
                     item: left,
-                    currentCount: getCount(left),
                     maxCount: maxCountPerItem,
+                    getCount: getCount,
                     onAddWithPos: onAddWithPos,
                     onMinus: onMinus,
                     onShowToast: onShowToast,
@@ -81,8 +81,8 @@ class RecommendSection extends StatelessWidget {
                   child: right != null
                       ? RecommendCard(
                           item: right,
-                          currentCount: getCount(right),
                           maxCount: maxCountPerItem,
+                          getCount: getCount,
                           onAddWithPos: onAddWithPos,
                           onMinus: onMinus,
                           onShowToast: onShowToast,
@@ -93,10 +93,8 @@ class RecommendSection extends StatelessWidget {
             ),
           );
         },
-        childCount: () {
-          if (rows.isEmpty) return titleOffset + 1;
-          return titleOffset + rows.length + 1;
-        }(),
+        childCount:
+            rows.isEmpty ? titleOffset + 1 : titleOffset + rows.length + 1,
       ),
     );
   }

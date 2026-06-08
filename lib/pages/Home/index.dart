@@ -26,7 +26,7 @@ class _HomeViewState extends State<HomeView> {
 
   // 顶部模块
   List<BannerItem> _bannerList = const [];
-  List<Category> _categoryList = const [];
+  List<Category> _categoryList = [];
   SpecialRecommend _specialRecommendList = SpecialRecommend(
     id: '',
     title: '',
@@ -72,17 +72,21 @@ class _HomeViewState extends State<HomeView> {
   // ========================= API 封装 =========================
   Future<void> _fetchBannerAndCategoryAndModules() async {
     // 前 5 个接口互相独立，**并行**请求，减少总等待时间
-    await Future.wait<void>([
-      fetchBannerItems().then((data) => _bannerList = data),
-      fetchCategoryItems().then((data) => _categoryList = data),
-      fetchSpecialRecommendItems()
-          .then((data) => _specialRecommendList = data)
-          .catchError((_) {
-        // 单个模块失败不影响整体刷新；保持旧数据即可
-      }),
-      fetchHotRecommendItems().then((data) => _hotRecommendList = data).catchError((_) {}),
-      fetchStepRecommendItems().then((data) => _stepRecommendList = data).catchError((_) {}),
+    final results = await Future.wait([
+      fetchBannerItems(),
+      fetchCategoryItems(),
+      fetchSpecialRecommendItems().catchError((_) => SpecialRecommend(id: '', title: '', subTypes: [])),
+      fetchHotRecommendItems().catchError((_) => []),
+      fetchStepRecommendItems().catchError((_) => []),
     ]);
+    
+    setState(() {
+      _bannerList = results[0] as List<BannerItem>;
+      _categoryList = results[1] as List<Category>;
+      _specialRecommendList = results[2] as SpecialRecommend;
+      _hotRecommendList = results[3] as List<HotItem>;
+      _stepRecommendList = results[4] as List<StepItem>;
+    });
   }
 
   /// 分页加载推荐列表

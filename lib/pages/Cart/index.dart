@@ -241,36 +241,37 @@ class _CartViewState extends State<CartView>
   }
 
   // ========== 推荐商品 key & 数量 ==========
+  // 推荐商品以图片 URL 作为 key（保证唯一）
   String _recommendKey(RecommendItem item) => item.$3;
   int _recommendCount(RecommendItem item) =>
       _recommendCartItemMap[_recommendKey(item)]?.quantity ?? 0;
 
-  Future<void> _onAddRecommendItem(
-    RecommendItem item,
-    Offset? startOffset,
-  ) async {
+  // ========== 推荐区 + 号 ==========
+  // 调用顺序（关键！）：
+  //   1. 卡片内部 setState → 圆形 + 立刻变步进器，数字显示 1
+  //   2. 父组件同步更新 _recommendCartItemMap → 结算栏立刻感知
+  //   3. addPostFrameCallback 后播放飞入购物车动画（用点击瞬间记录的坐标）
+  //   4. 动画播放完毕 → 写入 _recommendConfirmedMap → 上方列表才出现该商品
+  //
+  // 这样避免了：点击瞬间把商品塞进列表 → 列表变高 → 推荐卡片被推移 →
+  //   动画起点坐标「过时」导致动画乱飞 的问题。
+  void _onAddRecommendItem(RecommendItem item, Offset? startOffset) {
     final key = _recommendKey(item);
     final existing = _recommendCartItemMap[key];
-    final currentCount = existing?.quantity ?? 0;
+    final nextCount = (existing?.quantity ?? 0) + 1;
 
-    if (currentCount >= _maxRecommendCount) {
+    if (nextCount > _maxRecommendCount) {
       _showToast('该商品最多添加$_maxRecommendCount件');
       return;
     }
 
-    // 是否为首次添加（0 → 1）
-    final isFirstAdd = currentCount == 0;
-
-    // ========== 核心：同步 setState，立刻更新 UI ==========
-    // 必须同步更新数量 / 合并购物车数据，否则计数器不会立刻变
+    // 同步更新推荐商品 map（驱动结算栏）
     setState(() {
-      // 构造一个新的 Map，避免子组件因 Map 引用未变而误判为未变化
-      final nextMap = Map<String, CartItem>.from(_recommendCartItemMap);
       if (existing != null) {
-        nextMap[key] = existing..quantity = currentCount + 1;
+        existing.quantity = nextCount;
       } else {
         final (name, price, img, shopName) = item;
-        nextMap[key] = CartItem.fromRecommend(
+        _recommendCartItemMap[key] = CartItem.fromRecommend(
           recommendKey: key,
           name: name,
           price: price,
@@ -279,40 +280,55 @@ class _CartViewState extends State<CartView>
           shopName: shopName,
         );
       }
-      _recommendCartItemMap = nextMap;
     });
 
-    // ========== 首次添加：播放飞入购物车动画（异步，不阻塞 UI） ==========
-    if (isFirstAdd && startOffset != null && mounted) {
-      // 在当前 frame 完成后再启动动画，避免与 build 冲突
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        unawaited(_playDropToCartAnimation(startOffset!));
+    // 已确认到列表的商品：只是数量 +1，无需再播动画
+    if (_recommendConfirmedMap.containsKey(key)) return;
+    if (startOffset == null) {
+      // 坐标拿不到 → 直接落库，不播动画
+      setState(() {
+        _recommendConfirmedMap[key] = _recommendCartItemMap[key]!;
       });
+      return;
     }
+
+    // 等当前帧 build 完成，再播动画；播放完毕后再落库
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await _playDropToCartAnimation(startOffset);
+      if (!mounted) return;
+      setState(() {
+        _recommendConfirmedMap[key] = _recommendCartItemMap[key]!;
+      });
+    });
   }
 
+  // ========== 推荐区 - 号 ==========
+  //   - 已确认（出现在上方列表）：弹框确认删除；删除时卡片内部计数也同步归零
+  //   - 未确认：直接 -1；若减到 0，则同步从推荐 map 中移除，并把卡片计数置 0
   Future<void> _onMinusRecommendItem(RecommendItem item) async {
     final key = _recommendKey(item);
     final existing = _recommendCartItemMap[key];
     if (existing == null) return;
 
-    // 当前数量 == 1：点击「-」视为请求删除，走统一的确认对话框
     if (existing.quantity <= 1) {
+      // 数量为 1 时点击 - → 走删除确认
       final confirmed = await _showDeleteConfirmDialog(existing);
       if (confirmed != true) return;
       setState(() {
-        _recommendCartItemMap =
-            Map<String, CartItem>.from(_recommendCartItemMap)..remove(key);
+        _recommendCartItemMap.remove(key);
+        _recommendConfirmedMap.remove(key);
       });
       return;
     }
 
-    // 数量 > 1：普通减 1
     setState(() {
-      _recommendCartItemMap = Map<String, CartItem>.from(_recommendCartItemMap)
-        ..[key] = existing
-        ..quantity = existing.quantity - 1;
+      existing.quantity = existing.quantity - 1;
+      // 同时同步到已确认 map（若存在的话），保证列表数量与推荐卡片一致
+      final confirmed = _recommendConfirmedMap[key];
+      if (confirmed != null) {
+        confirmed.quantity = existing.quantity;
+      }
     });
   }
 

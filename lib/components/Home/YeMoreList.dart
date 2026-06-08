@@ -11,7 +11,7 @@ class YeMoreList extends StatefulWidget {
 
 class _YeMoreListState extends State<YeMoreList> {
   final ScrollController _scrollController = ScrollController();
-  final List<int> _items = List.generate(20, (index) => index);
+
   bool _isLoading = false;
 
   @override
@@ -76,16 +76,16 @@ class _YeMoreListState extends State<YeMoreList> {
                       text: '¥${widget.recommendList[index].price}',
                       style: const TextStyle(
                         color: Colors.red,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                       children: [
-                        TextSpan(text: '  '),
+                        TextSpan(text: ' '),
                         TextSpan(
                           text: '¥${widget.recommendList[index].price}',
                           style: const TextStyle(
                             color: Color.fromARGB(106, 12, 4, 4),
-                            fontSize: 12,
+                            fontSize: 10,
                             decoration: TextDecoration.lineThrough,
                           ),
                         ),

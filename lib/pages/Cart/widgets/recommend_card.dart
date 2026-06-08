@@ -1,10 +1,14 @@
 /// 购物车 - 猜你喜欢 单个商品卡片
 ///
-/// 包含：商品图片、名称、价格、数量 ± 控件
-/// 点击 + 按钮时：
-///   1. 立即调用 onAddWithPos（父组件 setState → 数量 UI 更新）
-///   2. 同步计算 + 按钮中心点（用于飞入购物车动画）
-///      计算失败时降级为「传 null，不加动画」，但**不会**阻塞加购
+/// 设计要点（解决了两个关键问题）：
+/// 1. **数量显示永远是最新的**：每次 build 时通过 `getCount(item)` 回调
+///    从父组件（index.dart 的 `_recommendCount`）实时读取。
+///    父组件的 `setState` 会触发 `SliverList.builder` 重建卡片 → 新值生效。
+/// 2. **动画起点坐标永远是「点击瞬间」的真实坐标**：用 `Builder` 把
+///    + 按钮包起来，拿到按钮自己的 `BuildContext`，再通过 `findRenderObject`
+///    计算屏幕中心坐标。
+///
+/// 这是标准的 Flutter 模式：子组件不维护状态，完全由父组件的 map 驱动。
 import 'package:flutter/material.dart';
 import '../recommend_mock.dart';
 
@@ -12,28 +16,32 @@ class RecommendCard extends StatelessWidget {
   const RecommendCard({
     super.key,
     required this.item,
-    required this.currentCount,
     required this.maxCount,
+    required this.getCount,
     required this.onAddWithPos,
     required this.onMinus,
     required this.onShowToast,
   });
 
   final RecommendItem item;
-  final int currentCount;
   final int maxCount;
 
-  /// + 按钮回调：item + 起点坐标（坐标为 null 时降级为无动画加购）
+  /// 获取当前商品的数量。每次 build 都会调用，保证最新。
+  final int Function(RecommendItem item) getCount;
+
+  /// 点击 + 号的回调：传入商品 + 按钮屏幕中心坐标（可能为 null）。
   final void Function(RecommendItem item, Offset? startPos) onAddWithPos;
 
-  /// - 按钮回调（异步，可在内部弹确认删除对话框）
+  /// 点击 - 号的回调（异步，可弹确认删除对话框）。
   final Future<void> Function(RecommendItem item) onMinus;
+
   final void Function(String msg) onShowToast;
 
   @override
   Widget build(BuildContext context) {
     final (name, price, img, _shop) = item;
-    final atMax = currentCount >= maxCount;
+    final count = getCount(item);
+    final atMax = count >= maxCount;
 
     return Container(
       decoration: BoxDecoration(
@@ -99,12 +107,7 @@ class RecommendCard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                _buildAddButton(
-                  context: context,
-                  item: item,
-                  count: currentCount,
-                  atMax: atMax,
-                ),
+                _buildAddButton(context, count, atMax),
               ],
             ),
           ),
@@ -113,19 +116,7 @@ class RecommendCard extends StatelessWidget {
     );
   }
 
-  /// 加号 / 步进器按钮组
-  ///
-  /// 注意：
-  ///   + 按钮外层包了一个 Builder，保证拿到的 BuildContext 就是
-  ///   这个按钮自己的 context，而不是整张卡片的 context。
-  ///   这样 `_getButtonCenter` 才能拿到准确的 + 按钮中心点，
-  ///   从而驱动飞入购物车动画。
-  Widget _buildAddButton({
-    required BuildContext context,
-    required RecommendItem item,
-    required int count,
-    required bool atMax,
-  }) {
+  Widget _buildAddButton(BuildContext context, int count, bool atMax) {
     // 未添加：显示单个 + 圆形按钮
     if (count <= 0) {
       return Builder(
@@ -157,7 +148,7 @@ class RecommendCard extends StatelessWidget {
       );
     }
 
-    // 已添加：显示「- 数量 +」步进器
+    // 已添加：- 数量 + 步进器
     return Container(
       height: 24,
       decoration: BoxDecoration(
@@ -223,26 +214,20 @@ class RecommendCard extends StatelessWidget {
     );
   }
 
-  /// 获取 + 按钮的屏幕中心点坐标
+  /// 获取按钮的屏幕中心坐标。
   ///
-  /// 使用 `context.findRenderObject()` 获取按钮所在 RenderObject，
-  /// 再用 `localToGlobal(Offset.zero)` 得到左上角的屏幕坐标，最后
-  /// 加上宽高的一半得到中心点。
-  ///
-  /// 如果拿不到 RenderObject，降级返回 null —— 调用方会走「不加动画
-  /// 但仍然加购」的分支，**保证加购逻辑永远优先于动画**。
+  /// 使用 `context.findRenderObject()` + `localToGlobal(Offset.zero)` 计算。
+  /// 拿不到 RenderObject 时返回 null —— 调用方降级为「不加动画，但仍加购」。
   Offset? _getButtonCenter(BuildContext context) {
     try {
       final renderObj = context.findRenderObject();
       if (renderObj == null || renderObj is! RenderBox) return null;
-      // 若 widget 尚未完成 layout，hasSize 可能为 false → 降级用标称 24
       final size = renderObj.hasSize ? renderObj.size : const Size.square(24);
       final topLeft = renderObj.localToGlobal(Offset.zero);
       final center = Offset(
         topLeft.dx + size.width / 2,
         topLeft.dy + size.height / 2,
       );
-      // 避免出现 NaN / 无穷大坐标（理论上不会出现，但防御一下）
       if (center.dx.isNaN || center.dy.isNaN) return null;
       return center;
     } catch (_) {
